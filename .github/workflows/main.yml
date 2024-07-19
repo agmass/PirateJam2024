@@ -32,7 +32,6 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup ~/haxelib
-          haxelib install hxcpp > /dev/null --quiet
       - name: Skip SScript setup mode
         run: echo 'oy9:showMacroty8:loopCosti25y10:includeAllfg' >> ~/settings.cocoa
       - name: Create Version Tag
@@ -42,9 +41,10 @@ jobs:
           haxelib install flixel
           haxelib install openfl
           haxelib install lime
+          haxelib install hxcpp
           haxelib install flixel-addons
           
-          haxelib run lime build Project.xml html5 --app-version="4.0.0-${{ github.run_id}}"
+          haxelib run lime build html5"
       - name: Publish Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
