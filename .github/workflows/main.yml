@@ -39,7 +39,11 @@ jobs:
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
         run: |
-          haxelib fixrepo
+          haxelib install flixel
+          haxelib install openfl
+          haxelib install lime
+          haxelib install flixel-addons
+          
           haxelib run lime build Project.xml html5 --app-version="4.0.0-${{ github.run_id}}"
       - name: Publish Artifact
         uses: actions/upload-artifact@v2.2.4
