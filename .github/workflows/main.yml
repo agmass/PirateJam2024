@@ -40,6 +40,7 @@ jobs:
         shell: cmd
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
+        shell: cmd
       - name: Compile
         run: |
           
