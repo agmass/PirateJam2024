@@ -24,8 +24,7 @@ jobs:
       run: |
         haxelib setup /home/runner/haxe/haxelib/
         haxelib install haxelib 4.0.3
-        haxelib dev flixel-templates .
-    
+        
     - uses: HaxeFlixel/setup-flixel@v1
       with:
         haxe-version: current
@@ -33,9 +32,4 @@ jobs:
         target: ${{matrix.target}}
     
     - run: |
-        cd ${{env.HAXELIB_REPO}}/flixel-tools/git
-        npm install
-        cd ..
-        haxelib run flixel-tools tpl -n "default"
-        cd default
         haxelib run lime build ${{matrix.target}}
