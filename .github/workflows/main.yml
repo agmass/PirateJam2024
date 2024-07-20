@@ -1,51 +1,41 @@
-# This is a basic workflow to help you get started with Actions
+name: CI
 
-name: Build
+on: [push, pull_request, workflow_dispatch, repository_dispatch]
 
-
-# Controls when the action will run.
-on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  buildLinux:
-    # The type of runner that the job will run on
+  build:
+    strategy:
+      matrix:
+        haxe-version: [ latest]
+        target: [html5]
+        exclude:
+        - {haxe-version: nightly, target: html5}
+      fail-fast: false
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: latest
-      # Runs a set of commands using the runners shell
-      - name: Install Haxelib
-        run: |
-          sudo apt-get install libvlc-dev
-          sudo apt-get install libvlccore-dev
-          haxelib setup ~/haxelib
-          haxelib install hxcpp > /dev/null --quiet
-          haxe -cp ./setup -D analyzer-optimize -main Main --interp
-      - name: Skip SScript setup mode
-        run: echo 'oy9:showMacroty8:loopCosti25y10:includeAllfg' >> ~/settings.cocoa
-      - name: Create Version Tag
-        run: echo "${{github.run_id}}" > VERSION
-      - name: Compile
-        run: |
-          haxelib run lime build Project.xml linux --app-version="4.0.0-${{ github.run_id}}"
-      - name: Publish Artifact
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: linuxBuild
-          path: 'export/release/linux/bin'
+    - run: sudo apt-get update
+    - uses: actions/checkout@v3
+    
+    - uses: krdlab/setup-haxe@v1
+      with:
+        haxe-version: ${{matrix.haxe-version}}
+    
+    - name: "Configure Haxelib"
+      run: |
+        haxelib setup /home/runner/haxe/haxelib/
+        haxelib install haxelib 4.0.3
+        haxelib dev flixel-templates .
+    
+    - uses: HaxeFlixel/setup-flixel@v1
+      with:
+        haxe-version: current
+        flixel-versions: dev
+        target: ${{matrix.target}}
+    
+    - run: |
+        cd ${{env.HAXELIB_REPO}}/flixel-tools/git
+        npm install
+        cd ..
+        haxelib run flixel-tools tpl -n "default"
+        cd default
+        haxelib run lime build ${{matrix.target}}
