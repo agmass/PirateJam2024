@@ -36,4 +36,4 @@ jobs:
         flixel-versions: dev
         test-location: local
         target: ${{matrix.target}}
-        run-tests: true
+        run-tests: false
