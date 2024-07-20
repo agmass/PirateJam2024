@@ -1,19 +1,24 @@
 name: CI
 
-on: [push, pull_request, workflow_dispatch, repository_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  repository_dispatch:
+  schedule:
+    - cron: '0 4 * * *'
 
 jobs:
   build:
     strategy:
       matrix:
-        haxe-version: [ latest]
-        target: [html5]
-        exclude:
-        - {haxe-version: nightly, target: html5}
+        haxe-version: ["4.2.5", "4.3.4"]
+        target: [html5, hl, neko, flash, cpp]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
     - run: sudo apt-get update
+    
     - uses: actions/checkout@v3
     
     - uses: krdlab/setup-haxe@v1
@@ -24,15 +29,11 @@ jobs:
       run: |
         haxelib setup /home/runner/haxe/haxelib/
         haxelib install haxelib 4.0.3
-
-
-    - uses: HaxeFlixel/setup-flixel@v1
-      with:
-        haxe-version: current
-        flixel-versions: dev
-        target: ${{matrix.target}}
+        haxelib dev flixel .
     
-    - run: |
-        haxelib install lime 8.0.2
-        haxelib set lime 8.0.2
-        haxelib run lime build ${{matrix.target}}
+    - uses: HaxeFlixel/setup-flixel@master
+      with:
+        flixel-versions: dev
+        test-location: local
+        target: ${{matrix.target}}
+        run-tests: true
