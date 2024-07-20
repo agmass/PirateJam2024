@@ -5,12 +5,12 @@
 -cp /home/deck/haxelib/openfl/9,3,3/src
 -D openfl=9.3.3
 --macro lime._internal.macros.DefineMacro.run()
--cp /home/deck/haxelib/lime/8,1,2/src
--D lime=8.1.2
+-cp /home/deck/haxelib/lime/8,0,2/src
+-D lime=8.0.2
 -cp /home/deck/haxelib/flixel-addons/3,2,3
 -D flixel-addons=3.2.3
 -cp source
--D tools=8.1.2
+-D tools=8.0.2
 -D lime-canvas
 -D FLX_NO_DEBUG
 -D message.reporting=pretty

@@ -24,7 +24,8 @@ jobs:
       run: |
         haxelib setup /home/runner/haxe/haxelib/
         haxelib install haxelib 4.0.3
-        
+
+
     - uses: HaxeFlixel/setup-flixel@v1
       with:
         haxe-version: current
@@ -32,4 +33,6 @@ jobs:
         target: ${{matrix.target}}
     
     - run: |
+        haxelib install lime 8.0.2
+        haxelib set lime 8.0.2
         haxelib run lime build ${{matrix.target}}

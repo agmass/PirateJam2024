@@ -1,7 +1,6 @@
 package;
 
 import haxe.io.Bytes;
-import haxe.io.Path;
 import lime.utils.AssetBundle;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
@@ -55,11 +54,11 @@ import sys.FileSystem;
 
 		if (rootPath == null) {
 
-			#if (ios || tvos || webassembly)
+			#if (ios || tvos || emscripten)
 			rootPath = "assets/";
 			#elseif android
 			rootPath = "";
-			#elseif (console || sys)
+			#elseif console
 			rootPath = lime.system.System.applicationDirectory;
 			#else
 			rootPath = "./";
@@ -75,6 +74,17 @@ import sys.FileSystem;
 
 		var data, manifest, library, bundle;
 
+		#if kha
+
+		null
+		library = AssetLibrary.fromManifest (manifest);
+		Assets.registerLibrary ("null", library);
+
+		if (library != null) preloadLibraries.push (library);
+		else preloadLibraryNames.push ("null");
+
+		#else
+
 		data = '{"name":null,"assets":"aoy4:pathy36:assets%2Fmusic%2Fmusic-goes-here.txty4:sizezy4:typey4:TEXTy2:idR1y7:preloadtgoR0y36:assets%2Fsounds%2Fsounds-go-here.txtR2zR3R4R5R7R6tgoR0y27:assets%2Fimages%2Flight.pngR2i87R3y5:IMAGER5R8R6tgoR0y30:assets%2Fimages%2FtilesDBG.pngR2i641R3R9R5R10R6tgoR0y36:assets%2Fimages%2Fimages-go-here.txtR2zR3R4R5R11R6tgoR0y34:assets%2Fdata%2Fdata-goes-here.txtR2zR3R4R5R12R6tgoR0y26:assets%2Fdata%2Flevel.jsonR2i484031R3R4R5R13R6tgoR0y25:assets%2Fdata%2Fogmo.ogmoR2i3439R3R4R5R14R6tgoR2i8220R3y5:MUSICR5y26:flixel%2Fsounds%2Fbeep.mp3y9:pathGroupaR16y26:flixel%2Fsounds%2Fbeep.ogghR6tgoR2i39706R3R15R5y28:flixel%2Fsounds%2Fflixel.mp3R17aR19y28:flixel%2Fsounds%2Fflixel.ogghR6tgoR2i33629R3y5:SOUNDR5R20R17aR19R20hgoR2i6840R3R21R5R18R17aR16R18hgoR2i15744R3y4:FONTy9:classNamey35:__ASSET__flixel_fonts_nokiafc22_ttfR5y30:flixel%2Ffonts%2Fnokiafc22.ttfR6tgoR2i29724R3R22R23y36:__ASSET__flixel_fonts_monsterrat_ttfR5y31:flixel%2Ffonts%2Fmonsterrat.ttfR6tgoR0y33:flixel%2Fimages%2Fui%2Fbutton.pngR2i277R3R9R5R28R6tgoR0y36:flixel%2Fimages%2Flogo%2Fdefault.pngR2i505R3R9R5R29R6tgoR0y42:flixel%2Fimages%2Ftransitions%2Fcircle.pngR2i824R3R9R5R30R6tgoR0y42:flixel%2Fimages%2Ftransitions%2Fsquare.pngR2i383R3R9R5R31R6tgoR0y53:flixel%2Fimages%2Ftransitions%2Fdiagonal_gradient.pngR2i3812R3R9R5R32R6tgoR0y43:flixel%2Fimages%2Ftransitions%2Fdiamond.pngR2i788R3R9R5R33R6tgh","rootPath":null,"version":2,"libraryArgs":[],"libraryType":null}';
 		manifest = AssetManifest.parse (data, rootPath);
 		library = AssetLibrary.fromManifest (manifest);
@@ -86,10 +96,19 @@ import sys.FileSystem;
 		else preloadLibraryNames.push ("default");
 		
 
+		#end
+
 	}
 
 
 }
+
+
+#if kha
+
+null
+
+#else
 
 #if !display
 #if flash
@@ -164,6 +183,8 @@ import sys.FileSystem;
 #end
 
 #end
+#end
+
 #end
 
 #end
