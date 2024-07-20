@@ -37,3 +37,6 @@ jobs:
         test-location: local
         target: ${{matrix.target}}
         run-tests: false
+
+    - run: |
+        haxelib run lime build ${{matrix.target}}
