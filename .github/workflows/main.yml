@@ -37,4 +37,4 @@ jobs:
     - uses: actions/upload-artifact@v2.2.4
       with:
         name: ${{matrix.target}}Build
-        path: export/release/${{matrix.target}}/bin
+        path: export/${{matrix.target}}/bin

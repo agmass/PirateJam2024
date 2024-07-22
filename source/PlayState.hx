@@ -17,7 +17,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.tile.FlxTilemap;
 import haxe.Json;
-import js.html.svg.Number;
 import lime.utils.Assets;
 import map.MapData;
 import openfl.filters.BlurFilter;
@@ -190,14 +189,22 @@ class PlayState extends FlxState
 
 		while (i < l)
 		{
-			if (tilemap.getTileByIndex(i) == index)
+			if (lightBounds.getTileCoordsByIndex(i, false).x > FlxG.camera.viewLeft - 16
+				&& lightBounds.getTileCoordsByIndex(i, false).x < FlxG.camera.viewRight + 16)
 			{
-				if (array == null)
+				if (lightBounds.getTileCoordsByIndex(i, false).y > FlxG.camera.viewTop - 16
+					&& lightBounds.getTileCoordsByIndex(i, false).y < FlxG.camera.viewBottom + 16)
 				{
-					array = [];
+					if (tilemap.getTileByIndex(i) == index)
+					{
+						if (array == null)
+						{
+							array = [];
+						}
+						array.push(i);
+					}
 				}
-				array.push(i);
-			}
+			} // << extra "oh god oh shit oh fuck" protection
 			i++;
 		}
 

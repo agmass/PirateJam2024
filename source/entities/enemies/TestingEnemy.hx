@@ -2,7 +2,6 @@ package entities.enemies;
 
 import entities.behaviour.attacks.Punch;
 import flixel.util.FlxColor;
-import js.html.svg.MarkerElement;
 
 class TestingEnemy extends PathfindingEntity
 {

@@ -93,12 +93,23 @@ import sys.FileSystem;
 
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_music_music_goes_here_txt extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_sounds_sounds_go_here_txt extends null { }
-@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_light_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
-@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_tilesdbg_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_tilemaps_light_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_tilemaps_tilesdbg_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_particles_bloodpng_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_particles_swoosh_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_images_go_here_txt extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_data_goes_here_txt extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_level_json extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_ogmo_ogmo extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_level_copy_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_genrooms_roomstraight_copy0_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_genrooms_roomstraight_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_genrooms_roomgsud_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_genrooms_roomcorner_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_genrooms_roomx_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_genrooms_roomcornercounter_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_genrooms_roomt_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_data_empty_json extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__flixel_sounds_flixel_ogg extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__flixel_sounds_beep_ogg extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__flixel_fonts_nokiafc22_ttf extends null { }
