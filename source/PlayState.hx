@@ -237,8 +237,7 @@ class PlayState extends FlxState
 				{
 					for (yc in -2...3)
 					{
-						if (lightBounds.getTile(cx + xc, cy + yc) != 0)
-							lightBounds.setTile(cx + xc, cy + yc, 0);
+						lightBounds.setTile(cx + xc, cy + yc, 0);
 						lighting.setTile(cx + xc, cy + yc, 0);
 					}
 				}

@@ -36,12 +36,6 @@ class MapData
 
 		var occupiedPositions = [[Math.floor((json.width / 2) / 32), Math.floor((json.height / 2) / 32)]];
 		var loops = 0;
-		var possibleRooms:Array<String> = [
-			AssetPaths.RoomCorner__json,
-			AssetPaths.RoomStraight__json,
-			AssetPaths.RoomT__json,
-			AssetPaths.RoomX__json
-		];
 		var shuffleTimer = 3;
 		while (loops < size)
 		{
@@ -54,14 +48,16 @@ class MapData
 				if (jigsaw.x > json.width || jigsaw.y > json.width)
 				{
 					trace("OOB");
+					toCreate.remove(jigsaw);
 					continue;
 				}
 				loops++;
 				if (loops > size)
 				{
+					toCreate.remove(jigsaw);
 					break;
 				}
-				shuffleTimer--;
+				shuffleTimer--; 
 				json = pasteIntoJson(json, Json.parse(Assets.getText(jigsaw.room)), jigsaw.x, jigsaw.y, jigsaw.rotation);
 				toCreate.remove(jigsaw);
 				if (jigsaw.room == AssetPaths.RoomX__json)
@@ -71,13 +67,7 @@ class MapData
 						if (jigsaw.origin != y
 							&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
 						{
-							toCreate.push({
-								room: possibleRooms[FlxG.random.int(0, possibleRooms.length - 1)],
-								rotation: y,
-								origin: findOrigin(y),
-								x: jigsaw.x + rotationIndexToX(y),
-								y: jigsaw.y + rotationIndexToY(y)
-							});
+							toCreate.push(newJigsaw(jigsaw, y));
 							occupiedPositions.push([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]);
 						}
 					}
@@ -103,30 +93,22 @@ class MapData
 						if (jigsaw.origin != y
 							&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
 						{
-							toCreate.push({
-								room: possibleRooms[FlxG.random.int(0, possibleRooms.length - 1)],
-								rotation: y,
-								origin: findOrigin(y),
-								x: jigsaw.x + rotationIndexToX(y),
-								y: jigsaw.y + rotationIndexToY(y)
-							});
+							toCreate.push(newJigsaw(jigsaw, y));
 							occupiedPositions.push([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]);
 						}
 					}
 				}
 				if (jigsaw.room == AssetPaths.RoomCorner__json)
 				{
-					var y = jigsaw.rotation + 1;
+					var y = jigsaw.rotation - 1;
+					if (y <= 0)
+					{
+						y = 3;
+					}
 					if (jigsaw.origin != y
 						&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
 					{
-						toCreate.push({
-							room: possibleRooms[FlxG.random.int(0, possibleRooms.length - 1)],
-							rotation: y,
-							origin: findOrigin(y),
-							x: jigsaw.x + rotationIndexToX(y),
-							y: jigsaw.y + rotationIndexToY(y)
-						});
+						toCreate.push(newJigsaw(jigsaw, y));
 						occupiedPositions.push([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]);
 					}
 					
@@ -141,6 +123,20 @@ class MapData
 		}
 		trace(json.layers[0].data);
 		return json;
+	}
+
+	public function newJigsaw(jigsaw:Jigsaw, y:Int):Jigsaw
+	{
+		var possibleRooms:Array<String> = [AssetPaths.RoomStraight__json, AssetPaths.RoomX__json];
+		var rot = y;
+		var orig = findOrigin(y);
+		return {
+			room: possibleRooms[FlxG.random.int(0, possibleRooms.length - 1)],
+			rotation: rot,
+			origin: findOrigin(y),
+			x: jigsaw.x + rotationIndexToX(y),
+			y: jigsaw.y + rotationIndexToY(y)
+		};
 	}
 
 	public function rotationIndexToY(r):Int
