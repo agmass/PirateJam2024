@@ -114,6 +114,23 @@ class MapData
 						}
 					}
 				}
+				if (jigsaw.room == AssetPaths.RoomCorner__json)
+				{
+					var y = jigsaw.rotation + 1;
+					if (jigsaw.origin != y
+						&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
+					{
+						toCreate.push({
+							room: possibleRooms[FlxG.random.int(0, possibleRooms.length - 1)],
+							rotation: y,
+							origin: findOrigin(y),
+							x: jigsaw.x + rotationIndexToX(y),
+							y: jigsaw.y + rotationIndexToY(y)
+						});
+						occupiedPositions.push([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]);
+					}
+					
+				}
 				if (shuffleTimer < 0)
 				{
 					shuffleTimer = 3;

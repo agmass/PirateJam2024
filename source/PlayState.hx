@@ -173,7 +173,6 @@ class PlayState extends FlxState
 	{
 		if (entity.name == "player")
 		{
-			trace(entity.x, entity.y);
 			localPlayer.setPosition(entity.x, entity.y);
 		}
 	}
@@ -189,9 +188,6 @@ class PlayState extends FlxState
 		var i:Int = Math.floor(FlxG.camera.viewLeft / 8) + (Math.floor(FlxG.camera.viewTop / 8) * tilemap.widthInTiles);
 		var l:Int = Math.floor(FlxG.camera.viewRight / 8) + (Math.floor(FlxG.camera.viewBottom / 8) * tilemap.widthInTiles);
 
-		trace(i);
-		trace(l);
-		trace("||||");
 		while (i < l)
 		{
 			if (tilemap.getTileByIndex(i) == index)
