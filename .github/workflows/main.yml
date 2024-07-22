@@ -12,8 +12,8 @@ jobs:
   build:
     strategy:
       matrix:
-        haxe-version: ["4.2.5", "4.3.4"]
-        target: [html5, hl, neko, flash, cpp]
+        haxe-version: ["4.3.4"]
+        target: [html5]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -28,8 +28,6 @@ jobs:
     - name: "Configure Haxelib"
       run: |
         haxelib setup /home/runner/haxe/haxelib/
-        haxelib install haxelib 4.0.3
-        haxelib dev flixel .
     
     - uses: HaxeFlixel/setup-flixel@master
       with:

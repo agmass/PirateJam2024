@@ -3,9 +3,10 @@ package util;
 import entities.LivingEntity;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.tweens.FlxTween;
 
 class Hitbox extends FlxSprite {
-	public var damage = 10;
+	public var damage = 10.0;
 	public var decay = 1.0;
 	public var decayWhenStill = true;
 	public var possibleTargets:Array<LivingEntity> = [];
@@ -13,26 +14,40 @@ class Hitbox extends FlxSprite {
 
     public function new(?x,?y,?a) {
 		super(x, y, a);
-		drag.x = drag.y = 2000;
+		drag.x = drag.y = 4000;
     }
 
     override function update(elapsed:Float) {
-        decay -= elapsed;
-        for (entity in possibleTargets) {
-            if (shooter==entity) {
-                possibleTargets.remove(entity);
-                continue;
-            }
-            if (entity.overlaps(this)) {
-                possibleTargets.remove(entity);
-				entity.damage(damage);
-				trace(entity.health);
-            }
-        }
-		super.update(elapsed);
-		if (decay < 0 || (decayWhenStill && velocity.x == 0 && velocity.y == 0)) {
-            FlxG.state.remove(this);
-            destroy();
-        }
+		if (alive)
+		{
+			decay -= elapsed;
+			for (entity in possibleTargets)
+			{
+				if (shooter == entity)
+				{
+					possibleTargets.remove(entity);
+					continue;
+				}
+				if (entity.overlaps(this))
+				{
+					possibleTargets.remove(entity);
+					entity.damage(damage);
+					trace(entity.health);
+				}
+			}
+			super.update(elapsed);
+			if (decay < 0 || (decayWhenStill && Math.abs(velocity.x) <= 350 && Math.abs(velocity.y) <= 350))
+			{
+				alive = false;
+
+				FlxTween.tween(this, {alpha: 0}, 0.05, {
+					onComplete: (t) ->
+					{
+						FlxG.state.remove(this);
+						destroy();
+					}
+				});
+			}
+		}
     }
 }
