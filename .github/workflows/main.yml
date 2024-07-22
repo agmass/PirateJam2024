@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         haxe-version: ["4.3.4"]
-        target: [html5]
+        target: [html5, linux, mac, windows]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
