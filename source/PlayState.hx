@@ -55,7 +55,7 @@ class PlayState extends FlxState
 		localPlayer = new LocalPlayerEntity(20,20);
 		add(localPlayer);
 		add(mouseObject);
-		FlxG.camera.zoom = 1.5;
+		FlxG.camera.zoom = 0.5;
 		
 		loadMemoryMap(Json.stringify(getCurrentMap().generate()));
 		lightingCam.bgColor.alpha = 0;
@@ -65,11 +65,11 @@ class PlayState extends FlxState
 		super.create();
 		
 	}
+	public var mapd:MapData = new MapData();
 
-	public static function getCurrentMap()
+	public function getCurrentMap()
 	{
-		var map:MapData = new MapData();
-		return map;
+		return mapd;
 	}
 
 	public static function getTilemap():FlxTilemap
@@ -82,12 +82,13 @@ class PlayState extends FlxState
 		var ps:PlayState = cast FlxG.state;
 		return ps.blood;
 	}
+	var e = 0;
 	override public function update(elapsed:Float)
 	{
 		lightingCam.zoom = FlxG.camera.zoom;
 		lightingCam.scroll.x = FlxG.camera.scroll.x;
 		lightingCam.scroll.y = FlxG.camera.scroll.y;
-		lightingTick();
+		// lightingTick();
 		mouseObject.x = FlxG.mouse.x;
 		mouseObject.y = FlxG.mouse.y;
 		if (FlxG.keys.pressed.F)
@@ -112,13 +113,12 @@ class PlayState extends FlxState
 			add(enemy);
 		}
 		super.update(elapsed);
-		FlxG.collide(localPlayer, walls);
+		// FlxG.collide(localPlayer, walls);
 	}
 	var map:FlxOgmo3Loader;
 	var walls:FlxTilemap;
 	var lighting:FlxTilemap;
 	var lightBounds:FlxTilemap;
-
 	public function loadMemoryMap(mapData)
 	{
 		map = new FlxOgmo3LoaderButCool(AssetPaths.ogmo__ogmo, mapData);
@@ -134,6 +134,7 @@ class PlayState extends FlxState
 		lighting.follow();
 		add(lighting);
 		lighting.camera = lightingCam;
+		localPlayer.setPosition(walls.getMidpoint().x, walls.getMidpoint().y);
 		map.loadEntities(placeEntities, "entities");
 	}
 

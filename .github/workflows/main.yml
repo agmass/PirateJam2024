@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         haxe-version: ["4.3.4"]
-        target: [html5, linux, mac, windows]
+        target: [html5, linux]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -38,3 +38,4 @@ jobs:
       with:
         name: ${{matrix.target}}Build
         path: export/${{matrix.target}}/bin
+ 

@@ -35,7 +35,7 @@ class ApplicationMain
 		ManifestResources.init(config);
 		#end
 
-		app.meta["build"] = "30";
+		app.meta["build"] = "32";
 		app.meta["company"] = "HaxeFlixel";
 		app.meta["file"] = "PirateJam2024";
 		app.meta["name"] = "PirateJam2024";
@@ -52,7 +52,7 @@ class ApplicationMain
 			borderless: false,
 			// display: 0,
 			element: null,
-			frameRate: 60,
+			frameRate: 300,
 			#if !web fullscreen: false, #end
 			height: 720,
 			hidden: #if munit true #else false #end,
@@ -105,7 +105,7 @@ class ApplicationMain
 		app.window.title = "PirateJam2024";
 		#else
 		app.window.context.attributes.background = 0;
-		app.window.frameRate = 60;
+		app.window.frameRate = 300;
 		#end
 
 		var preloader = getPreloader();

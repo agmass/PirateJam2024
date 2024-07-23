@@ -16,7 +16,7 @@ typedef Jigsaw =
 
 class MapData
 {
-	public var size = 15;
+	public var size = 25;
 
 	public function new() {}
 
@@ -26,7 +26,7 @@ class MapData
 
 		var toCreate:Array<Jigsaw> = [
 			{
-				room: AssetPaths.RoomX__json,
+				room: AssetPaths.RoomEnterance__json,
 				rotation: 0,
 				origin: -1,
 				x: Math.floor((json.width / 2) / 32),
@@ -34,7 +34,7 @@ class MapData
 			}
 		];
 
-		var occupiedPositions = [[Math.floor((json.width / 2) / 32), Math.floor((json.height / 2) / 32)]];
+		var occupiedPositions = [];
 		var loops = 0;
 		var shuffleTimer = 3;
 		while (loops < size)
@@ -45,18 +45,35 @@ class MapData
 			}
 			for (jigsaw in toCreate)
 			{
-				if (jigsaw.x > json.width || jigsaw.y > json.width)
+				if (jigsaw.x > json.width || jigsaw.y > json.height)
 				{
 					trace("OOB");
 					toCreate.remove(jigsaw);
 					continue;
 				}
 				loops++;
+				trace(occupiedPositions);
+				var continueornot = true;
+				for (i in occupiedPositions)
+				{
+					if (i[0] == jigsaw.x && i[1] == jigsaw.y)
+					{
+						trace("occupied");
+						toCreate.remove(jigsaw);
+						continueornot = false;
+						break;
+					}
+				}
+				if (!continueornot)
+				{
+					continue;
+				}
 				if (loops > size)
 				{
 					toCreate.remove(jigsaw);
 					break;
 				}
+				occupiedPositions.push([jigsaw.x, jigsaw.y]);
 				shuffleTimer--; 
 				json = pasteIntoJson(json, Json.parse(Assets.getText(jigsaw.room)), jigsaw.x, jigsaw.y, jigsaw.rotation);
 				toCreate.remove(jigsaw);
@@ -68,7 +85,21 @@ class MapData
 							&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
 						{
 							toCreate.push(newJigsaw(jigsaw, y));
-							occupiedPositions.push([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]);
+						}
+					}
+				}
+				if (jigsaw.room == AssetPaths.RoomEnterance__json)
+				{
+					for (y in 0...4)
+					{
+						if (y == 0)
+						{
+							continue;
+						}
+						if (jigsaw.origin != y
+							&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
+						{
+							toCreate.push(newJigsaw(jigsaw, y));
 						}
 					}
 				}
@@ -94,24 +125,9 @@ class MapData
 							&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
 						{
 							toCreate.push(newJigsaw(jigsaw, y));
-							occupiedPositions.push([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]);
+
 						}
 					}
-				}
-				if (jigsaw.room == AssetPaths.RoomCorner__json)
-				{
-					var y = jigsaw.rotation - 1;
-					if (y <= 0)
-					{
-						y = 3;
-					}
-					if (jigsaw.origin != y
-						&& !occupiedPositions.contains([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]))
-					{
-						toCreate.push(newJigsaw(jigsaw, y));
-						occupiedPositions.push([jigsaw.x + rotationIndexToX(y), jigsaw.y + rotationIndexToY(y)]);
-					}
-					
 				}
 				if (shuffleTimer < 0)
 				{
@@ -121,21 +137,30 @@ class MapData
 				}
 			}
 		}
-		trace(json.layers[0].data);
 		return json;
 	}
 
 	public function newJigsaw(jigsaw:Jigsaw, y:Int):Jigsaw
 	{
-		var possibleRooms:Array<String> = [AssetPaths.RoomStraight__json, AssetPaths.RoomX__json];
+		var possibleRooms:Array<String> = [
+			AssetPaths.RoomStraight__json,
+			AssetPaths.RoomStraight__json,
+			AssetPaths.RoomStraight__json,
+			AssetPaths.RoomShortcut__json,
+			AssetPaths.RoomX__json,
+			AssetPaths.RoomX__json,
+			AssetPaths.RoomX__json,
+			AssetPaths.RoomX__json
+		];
 		var rot = y;
+		var room = possibleRooms[FlxG.random.int(0, possibleRooms.length - 1)];
 		var orig = findOrigin(y);
 		return {
-			room: possibleRooms[FlxG.random.int(0, possibleRooms.length - 1)],
+			room: room,
 			rotation: rot,
-			origin: findOrigin(y),
-			x: jigsaw.x + rotationIndexToX(y),
-			y: jigsaw.y + rotationIndexToY(y)
+			origin: jigsaw.rotation,
+			x: jigsaw.x + rotationIndexToX(rot),
+			y: jigsaw.y + rotationIndexToY(rot)
 		};
 	}
 
@@ -163,8 +188,8 @@ class MapData
 		}
 		else
 		{
-			targetJson.layers[0].data = combineLayers(targetJson, rotate(copyJson, 0, r), x, y, 0, 32);
-			targetJson.layers[1].data = combineLayers(targetJson, copyJson, x * 4, y * 4, 1, 8);
+			targetJson.layers[0].data = combineLayers(targetJson, rotate(copyJson, 0, r, 32), x, y, 0, 32);
+			targetJson.layers[1].data = combineLayers(targetJson, rotate(copyJson, 1, r, 8), x * 4, y * 4, 1, 8);
 		}
 		for (entity in copyJson.layers[2].entities)
 		{
@@ -175,7 +200,7 @@ class MapData
 		return targetJson;
 	}
 
-	public function rotate(copyJson:MyObj, ind, times):MyObj
+	public function rotate(copyJson:MyObj, ind, times, sizeOfTiles):MyObj
 	{
 		var copylist = copyJson.layers[ind].data.copy();
 		var pastelist = [];
@@ -184,14 +209,14 @@ class MapData
 			pastelist = [];
 			var cw = copyJson.width;
 
-			var ch = Math.floor(copyJson.height / 32);
+			var ch = Math.floor(copyJson.height / sizeOfTiles);
 			for (y in 0...ch)
 			{
-				for (x in 0...Math.round(cw / 32))
+				for (x in 0...Math.round(cw / sizeOfTiles))
 				{
 					var newX = ch - 1 - y;
 					var newY = x;
-					pastelist[(newY * Math.round(cw / 32)) + newX] = copylist[(y * Math.round(cw / 32)) + x];
+					pastelist[(newY * Math.round(cw / sizeOfTiles)) + newX] = copylist[(y * Math.round(cw / sizeOfTiles)) + x];
 				}
 			}
 			copylist = pastelist;
