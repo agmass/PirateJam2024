@@ -2,9 +2,20 @@ package entities.player;
 
 import entities.behaviour.attacks.Punch;
 import flixel.FlxG;
+import items.PotionItem;
 
 class LocalPlayerEntity extends PlayerEntity
 {
+	override public function new(x, y)
+	{
+		super(x, y);
+		for (i in 0...5)
+		{
+			inventory.addPotion(new PotionItem());
+		}
+	}
+
+
 	override function update(elapsed:Float)
 	{
 		handleMovementInputs();
@@ -12,7 +23,7 @@ class LocalPlayerEntity extends PlayerEntity
 		{
 			var Xdistance = FlxG.mouse.x - x;
 			var Ydistance = FlxG.mouse.y - y;
-			Punch.attack(Math.atan2(Ydistance, Xdistance) * 180 / Math.PI, 1 - (punchCooldown * 2), this);
+			punch.attack(Math.atan2(Ydistance, Xdistance) * 180 / Math.PI, 1 - (punchCooldown * 2), this);
 		}
 		super.update(elapsed);
 	}
@@ -40,11 +51,20 @@ class LocalPlayerEntity extends PlayerEntity
 			up = down = false;
 		if (left && right)
 			left = right = false;
+		if (left)
+		{
+			flipX = true;
+		}
+		if (right)
+		{
+			flipX = false;
+		}
 		if (up || down || left || right)
 		{
 			var newAngle:Float = 0;
 			if (up)
 			{
+				animation.play("forward");
 				newAngle = -90;
 				if (left)
 					newAngle -= 45;
@@ -53,6 +73,7 @@ class LocalPlayerEntity extends PlayerEntity
 			}
 			else if (down)
 			{
+				animation.play("walk");
 				newAngle = 90;
 				if (left)
 					newAngle += 45;
@@ -60,10 +81,20 @@ class LocalPlayerEntity extends PlayerEntity
 					newAngle -= 45;
 			}
 			else if (left)
+			{
+				animation.play("sidestep");
 				newAngle = 180;
+			}
 			else if (right)
+			{
+				animation.play("sidestep");
 				newAngle = 0;
+			}
 			velocity.setPolarDegrees(getMovementSpeed(), newAngle);
+		}
+		else
+		{
+			animation.play("idle");
 		}
 	}
 }

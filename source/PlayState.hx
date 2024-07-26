@@ -16,10 +16,16 @@ import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.tile.FlxTilemap;
+import flixel.util.FlxDirectionFlags;
+import flixel.util.FlxTimer;
 import haxe.Json;
+import items.DroppedItem;
 import lime.utils.Assets;
+import magicEffects.FireEffect;
 import map.MapData;
+import map.decorations.Chest;
 import openfl.filters.BlurFilter;
+import ui.SlotUI;
 import util.FlxOgmo3LoaderButCool;
 import util.FlxTilemapLighting;
 import util.Hitbox;
@@ -40,26 +46,45 @@ typedef MyObj =
 
 class PlayState extends FlxState
 {
-	var localPlayer:LocalPlayerEntity;
+	public var localPlayer:LocalPlayerEntity;
 	var mouseObject:FlxSprite = new FlxSprite(0, 0).makeGraphic(18, 18);
 	
 	var belowPlayer:FlxGroup = new FlxGroup();
+	var collideable:FlxGroup = new FlxGroup();
+
+	public var chests:FlxTypedGroup<Chest> = new FlxTypedGroup();
+	public var droppedItems:FlxTypedGroup<DroppedItem> = new FlxTypedGroup();
+
+	public var slotsRight:FlxGroup = new FlxGroup();
+
+	var selected = 0;
+
+	public var lastUpdated = -1;
 	var blood:FlxSpriteGroup = new FlxSpriteGroup();
 
 	var lightingCam:FlxCamera = new FlxCamera(0, 0, 0, 0, 0);
+	var uiCam:FlxCamera = new FlxCamera(0, 0, 0, 0, 0);
 	
 	override public function create()
 	{
-		add(belowPlayer);
+		add(collideable);
+		collideable.add(belowPlayer);
 		add(blood);
+		collideable.add(chests);
+		add(droppedItems);
 		localPlayer = new LocalPlayerEntity(20,20);
 		add(localPlayer);
+		add(localPlayer.healthBar);
 		add(mouseObject);
-		FlxG.camera.zoom = 0.5;
+		add(slotsRight);
+		slotsRight.camera = uiCam;
+		FlxG.camera.zoom = 1.5;
 		
 		loadMemoryMap(Json.stringify(getCurrentMap().generate()));
 		lightingCam.bgColor.alpha = 0;
 		FlxG.cameras.add(lightingCam, false);
+		uiCam.bgColor.alpha = 0;
+		FlxG.cameras.add(uiCam, false);
 		FlxG.camera.follow(localPlayer, FlxCameraFollowStyle.LOCKON);
 		lightingCam.follow(localPlayer, FlxCameraFollowStyle.LOCKON);
 		super.create();
@@ -85,12 +110,40 @@ class PlayState extends FlxState
 	var e = 0;
 	override public function update(elapsed:Float)
 	{
+		lightingTick();
+		FlxG.worldBounds.set(FlxG.camera.viewLeft - 200, FlxG.camera.viewTop - 200, FlxG.camera.viewWidth + 200, FlxG.camera.viewHeight + 200);
 		lightingCam.zoom = FlxG.camera.zoom;
 		lightingCam.scroll.x = FlxG.camera.scroll.x;
 		lightingCam.scroll.y = FlxG.camera.scroll.y;
-		// lightingTick();
 		mouseObject.x = FlxG.mouse.x;
 		mouseObject.y = FlxG.mouse.y;
+		var i = 0;
+		selected -= Math.floor(FlxG.mouse.wheel / 120);
+		slotsRight.forEachOfType(SlotUI, (sui) ->
+		{
+			sui.x = FlxG.width - 86;
+			sui.y = (64 + 20) * i;
+			if (Math.round(selected) == i && lastUpdated != i)
+			{
+				lastUpdated = i;
+				uiCam.follow(sui, FlxCameraFollowStyle.LOCKON, 2);
+				sui.select();
+				slotsRight.forEachOfType(SlotUI, (sui2) ->
+				{
+					if (sui != sui2)
+						sui2.deselect();
+				});
+			}
+			if (FlxG.keys.justPressed.E)
+			{
+				if (Math.round(selected) == i)
+				{
+					sui.refItem.use(localPlayer);
+				}
+			}
+
+			i++;
+		});
 		if (FlxG.keys.pressed.F)
 		{
 			FlxG.overlap(mouseObject, blood, (m, bloodObject:FlxSprite) ->
@@ -113,7 +166,9 @@ class PlayState extends FlxState
 			add(enemy);
 		}
 		super.update(elapsed);
-		// FlxG.collide(localPlayer, walls);
+		FlxG.collide(localPlayer, collideable);
+		FlxG.collide(droppedItems, collideable);
+		FlxG.collide(blood, collideable);
 	}
 	var map:FlxOgmo3Loader;
 	var walls:FlxTilemap;
@@ -152,6 +207,7 @@ class PlayState extends FlxState
 		lighting = cast map.loadTilemap(AssetPaths.light__png, "lighting");
 		lighting.follow();
 		add(lighting);
+		lighting.allowCollisions = FlxDirectionFlags.NONE;
 		lighting.camera = lightingCam;
 		map.loadEntities(placeEntities, "entities");
 	}
@@ -167,13 +223,21 @@ class PlayState extends FlxState
 		{
 			if (!le.invincible && shooter != le)
 				hitbox.possibleTargets.push(le);
-		});
+		}, true);
 	}
 	public function placeEntities(entity:EntityData)
 	{
 		if (entity.name == "player")
 		{
 			localPlayer.setPosition(entity.x, entity.y);
+		}
+		if (entity.name == "chest")
+		{
+			if (Reflect.getProperty(entity.values, "spawnChance") >= FlxG.random.int(0, 100))
+			{
+				var chest = new Chest(entity.x, entity.y);
+				chests.add(chest);
+			}
 		}
 	}
 	/**
@@ -211,10 +275,14 @@ class PlayState extends FlxState
 
 		return array;
 	}
+	var lastscrollx = 0.0;
+	var lastscrolly = 0.0;
 
 	public function lightingTick()
 	{
 		var marked:Array<Int> = [];
+		// if (lastscrollx != FlxG.camera.viewLeft || lastscrolly != FlxG.camera.viewTop)
+		// {
 		var tileIns = getTileInstancesWithinScreenSpace(0, lightBounds);
 		if (tileIns != null)
 		{
@@ -232,6 +300,7 @@ class PlayState extends FlxState
 				}
 			}
 		}
+
 		var tileIns2 = getTileInstancesWithinScreenSpace(0, lighting);
 
 		if (tileIns2 != null)
@@ -252,4 +321,7 @@ class PlayState extends FlxState
 			}
 		}
 	}
+	// lastscrollx = FlxG.camera.viewLeft;
+	// lastscrolly = FlxG.camera.viewTop;
+	// }
 }

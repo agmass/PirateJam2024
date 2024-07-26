@@ -4,6 +4,7 @@ import flixel.FlxGame;
 import flixel.util.FlxColor;
 import openfl.display.FPS;
 import openfl.display.Sprite;
+import states.HellState;
 
 class Main extends Sprite
 {

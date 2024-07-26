@@ -4,12 +4,14 @@ import entities.LivingEntity;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.tweens.FlxTween;
+import magicEffects.MagicEffect;
 
 class Hitbox extends FlxSprite {
 	public var damage = 10.0;
 	public var decay = 1.0;
 	public var decayWhenStill = true;
 	public var possibleTargets:Array<LivingEntity> = [];
+	public var effectsWhenHit:Array<MagicEffect> = [];
 	public var shooter:LivingEntity;
 
     public function new(?x,?y,?a) {
@@ -31,6 +33,10 @@ class Hitbox extends FlxSprite {
 				if (entity.overlaps(this))
 				{
 					possibleTargets.remove(entity);
+					for (effect in effectsWhenHit)
+					{
+						effect.apply(entity);
+					}
 					entity.damage(damage);
 					trace(entity.health);
 				}

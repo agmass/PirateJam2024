@@ -8,7 +8,7 @@ class TestingEnemy extends PathfindingEntity
 	public function new(?x, ?y)
 	{
 		super(x, y);
-		movementSpeed = 400;
+		health = 25;
 		makeGraphic(32, 32, FlxColor.RED);
 	}
 
@@ -27,7 +27,7 @@ class TestingEnemy extends PathfindingEntity
 					var Xdistance = target.x - x;
 					var Ydistance = target.y - y;
 					movementModifications.set("punch", -400);
-					Punch.attack(Math.atan2(Ydistance, Xdistance) * 180 / Math.PI, 1, this);
+					punch.attack(Math.atan2(Ydistance, Xdistance) * 180 / Math.PI, 1, this);
 					punchCooldown = 0.8;
 				}
 			}

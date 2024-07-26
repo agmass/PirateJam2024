@@ -1,23 +1,32 @@
 package entities;
 
+import entities.behaviour.attacks.Punch;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.effects.particles.FlxEmitter;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import haxe.rtti.CType.Abstractdef;
+import magicEffects.MagicEffect;
 import util.Hitbox;
-
-class LivingEntity extends FlxSprite {
+class LivingEntity extends FlxSprite
+{
 
 	public var health = 100.0;
-    public var movementSpeed = 500;
+	public var maxHealth = 100.0;
+	public var movementSpeed = 350;
     public var movementModifications:Map<String, Int> = new Map();
 	public var punchCooldown = 1.0;
 	public var invincible = false;
+	public var appliedEffects:Map<String, MagicEffect> = [];
 	public var destroyOnDeath = true;
+	public var punch = new Punch();
+	public var healthBar:FlxBar = new FlxBar(0, 0, FlxBarFillDirection.LEFT_TO_RIGHT);
 
 	override public function new(?x, ?y)
 	{
 		super(x, y);
+		healthBar.createFilledBar(FlxColor.BLACK, FlxColor.RED, true);
 	}
 
     public function death() {
@@ -41,8 +50,16 @@ class LivingEntity extends FlxSprite {
 
 	override function update(elapsed:Float)
 	{
+		healthBar.value = health;
+		healthBar.setRange(0, maxHealth);
 		punchCooldown -= elapsed;
 		super.update(elapsed);
+		healthBar.x = x - ((healthBar.width - width) / 2);
+		healthBar.y = y - 24;
+		for (effect in appliedEffects)
+		{
+			effect.tick(elapsed);
+		}
 	}
 
     public function damage(damage:Float):Bool {
@@ -70,5 +87,9 @@ class LivingEntity extends FlxSprite {
             }
             return true;
         }
-    }
+	}
+	public function hasStatusEffect(name:String):Bool
+	{
+		return appliedEffects.exists(name);
+	}
 }

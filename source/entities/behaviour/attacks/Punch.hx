@@ -3,12 +3,17 @@ package entities.behaviour.attacks;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import magicEffects.BurningEffect;
 import util.Hitbox;
 import util.hitboxes.StickyHitbox;
 
 class Punch
 {
-	public static function attack(angle = 0.0, power = 0.0, entity:LivingEntity)
+	public var fire = false;
+
+	public function new() {}
+
+	public function attack(angle = 0.0, power = 0.0, entity:LivingEntity)
 	{
 		if (power > 0.85)
 		{
@@ -30,6 +35,11 @@ class Punch
 			hitbox.x = entity.getMidpoint().x - (hitbox.width / 2);
 			hitbox.y = entity.getMidpoint().y - (hitbox.height / 2);
 			hitbox.damage = 10 * power;
+			if (fire)
+			{
+				hitbox.loadGraphic(AssetPaths.fireswoosh__png);
+				hitbox.effectsWhenHit = [new BurningEffect(1, 5)];
+			}
 
 			PlayState.hitHitBox(hitbox, true, entity);
 		}

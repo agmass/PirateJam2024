@@ -42,7 +42,58 @@
       "gridCellHeight": 8,
       "gridCellsX": 68,
       "gridCellsY": 68,
-      "entities": []
+      "entities": [
+        {
+          "name": "chest",
+          "id": 0,
+          "_eid": "81687381",
+          "x": 256,
+          "y": 256,
+          "originX": 0,
+          "originY": 0,
+          "values": {"spawnChance": 25, "type": 0}
+        },
+        {
+          "name": "chest",
+          "id": 1,
+          "_eid": "81687381",
+          "x": 192,
+          "y": 24,
+          "originX": 0,
+          "originY": 0,
+          "values": {"spawnChance": 5, "type": 0}
+        },
+        {
+          "name": "chest",
+          "id": 2,
+          "_eid": "81687381",
+          "x": 416,
+          "y": 320,
+          "originX": 0,
+          "originY": 0,
+          "values": {"spawnChance": 5, "type": 0}
+        },
+        {
+          "name": "chest",
+          "id": 3,
+          "_eid": "81687381",
+          "x": 320,
+          "y": 416,
+          "originX": 0,
+          "originY": 0,
+          "values": {"spawnChance": 5, "type": 0}
+        },
+        {
+          "name": "chest",
+          "id": 4,
+          "_eid": "81687381",
+          "x": 32,
+          "y": 320,
+          "originX": 0,
+          "originY": 0,
+          "values": {"spawnChance": 0, "type": 0}
+        }
+      ]
     }
   ]
 }
